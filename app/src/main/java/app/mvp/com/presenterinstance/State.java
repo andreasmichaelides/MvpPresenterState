@@ -3,6 +3,8 @@ package app.mvp.com.presenterinstance;
 import android.os.Parcelable;
 
 import com.google.auto.value.AutoValue;
+import com.google.gson.Gson;
+import com.google.gson.TypeAdapter;
 
 /**
  * Created by westplay on 13/08/17.
@@ -34,4 +36,9 @@ abstract class State implements Parcelable {
 
         public abstract State build();
     }
+
+    public static TypeAdapter<State> typeAdapter(Gson gson) {
+        return new AutoValue_State.GsonTypeAdapter(gson);
+    }
+
 }

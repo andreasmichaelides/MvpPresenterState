@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">PresenterInstance</string>
+    <string name="greeting_error">Ti</string>
 </resources>
