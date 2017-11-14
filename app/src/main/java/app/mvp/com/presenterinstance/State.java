@@ -11,7 +11,7 @@ import com.google.gson.TypeAdapter;
  */
 
 @AutoValue
-abstract class State implements Parcelable {
+public abstract class State implements Parcelable {
 
     public abstract String message();
 

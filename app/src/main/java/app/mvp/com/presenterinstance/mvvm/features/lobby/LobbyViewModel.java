@@ -13,6 +13,7 @@ import app.mvp.com.presenterinstance.mvvm.model.Response;
 import app.mvp.com.presenterinstance.mvvm.services.LoadCommonGreetingUseCase;
 import app.mvp.com.presenterinstance.mvvm.services.LoadLobbyGreetingUseCase;
 import app.mvp.com.presenterinstance.mvvm.services.SchedulersFacade;
+import app.mvp.com.presenterinstance.mvvm.services.pokemon.PokemonApi;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.subjects.PublishSubject;
@@ -27,10 +28,12 @@ public class LobbyViewModel extends ViewModel {
     private final Subject<Object> commonClick = PublishSubject.create();
     private final Subject<ButtonSelection> buttonSelection = PublishSubject.create();
     private final CompositeDisposable disposables = new CompositeDisposable();
+    private final PokemonApi pokemonApi;
 
     LobbyViewModel(LoadCommonGreetingUseCase loadCommonGreetingUseCase,
                    LoadLobbyGreetingUseCase loadLobbyGreetingUseCase,
-                   SchedulersFacade schedulersFacade) {
+                   SchedulersFacade schedulersFacade, PokemonApi pokemonApi) {
+        this.pokemonApi = pokemonApi;
 
         Observable<ButtonSelection> stateRestored = buttonSelection.flatMap(selection -> Observable.just(response.getValue() == null)
                 .filter(isNull -> isNull)
@@ -48,14 +51,24 @@ public class LobbyViewModel extends ViewModel {
                                 throwable -> response.setValue(Response.error(throwable))
                         ),
 
-                greetingClick.flatMapSingle(ignored -> loadLobbyGreetingUseCase.execute()
+                greetingClick.flatMap(ignored -> loadLobbyGreetingUseCase.execute()
+                        .flatMapObservable(someText -> pokemonApi.getPokemon("bulbasaur"))
                         .subscribeOn(schedulersFacade.io())
                         .observeOn(schedulersFacade.ui())
+                        .doOnError(throwable -> {
+                            response.setValue(Response.error(throwable));
+                            throwable.printStackTrace();
+                        })
+                        .onErrorResumeNext(Observable.empty())
+                        .map(pokemonResponse -> pokemonResponse.name())
                         .doOnSubscribe(s -> loadingStatus.setValue(true))
                         .doAfterTerminate(() -> loadingStatus.setValue(false)))
                         .subscribe(
                                 greeting -> response.setValue(Response.success(greeting)),
-                                throwable -> response.setValue(Response.error(throwable))
+                                throwable -> {
+                                    response.setValue(Response.error(throwable));
+                                    throwable.printStackTrace();
+                                }
                         ),
                 stateRestored
                         .filter(selection ->  selection == ButtonSelection.COMMON)

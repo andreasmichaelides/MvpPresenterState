@@ -7,6 +7,8 @@ import app.mvp.com.presenterinstance.mvvm.services.LoadCommonGreetingUseCase;
 import app.mvp.com.presenterinstance.mvvm.services.LoadLobbyGreetingUseCase;
 import app.mvp.com.presenterinstance.mvvm.services.LobbyGreetingRepository;
 import app.mvp.com.presenterinstance.mvvm.services.SchedulersFacade;
+import app.mvp.com.presenterinstance.mvvm.services.pokemon.PokemonApi;
+import app.mvp.com.presenterinstance.mvvm.services.pokemon.PokemonService;
 import dagger.Module;
 import dagger.Provides;
 
@@ -49,9 +51,22 @@ public class LobbyModule {
 
     @Provides
     @ActivityScope
+    static PokemonService providePokemonService() {
+        return new PokemonService();
+    }
+
+    @Provides
+    @ActivityScope
+    static PokemonApi providePokemonApi(PokemonService pokemonService) {
+        return pokemonService.createService(PokemonApi.class);
+    }
+
+    @Provides
+    @ActivityScope
     static LobbyViewModelFactory provideLobbyViewModelFactory(LoadCommonGreetingUseCase loadCommonGreetingUseCase,
                                                               LoadLobbyGreetingUseCase loadLobbyGreetingUseCase,
-                                                              SchedulersFacade schedulersFacade) {
-        return new LobbyViewModelFactory(loadCommonGreetingUseCase, loadLobbyGreetingUseCase, schedulersFacade);
+                                                              SchedulersFacade schedulersFacade,
+                                                              PokemonApi pokemonApi) {
+        return new LobbyViewModelFactory(loadCommonGreetingUseCase, loadLobbyGreetingUseCase, schedulersFacade, pokemonApi);
     }
 }
