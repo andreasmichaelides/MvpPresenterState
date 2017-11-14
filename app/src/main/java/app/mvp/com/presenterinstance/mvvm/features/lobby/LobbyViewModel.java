@@ -25,7 +25,6 @@ public class LobbyViewModel extends ViewModel {
 
     private final Subject<Object> greetingClick = PublishSubject.create();
     private final Subject<Object> commonClick = PublishSubject.create();
-    //    private final Subject<ButtonSelection> buttonSelection = BehaviorSubject.create();
     private final Subject<ButtonSelection> buttonSelection = PublishSubject.create();
     private final CompositeDisposable disposables = new CompositeDisposable();
 
@@ -33,7 +32,7 @@ public class LobbyViewModel extends ViewModel {
                    LoadLobbyGreetingUseCase loadLobbyGreetingUseCase,
                    SchedulersFacade schedulersFacade) {
 
-        Observable<ButtonSelection> selectionObservable = buttonSelection.flatMap(selection -> Observable.just(response.getValue() == null)
+        Observable<ButtonSelection> stateRestored = buttonSelection.flatMap(selection -> Observable.just(response.getValue() == null)
                 .filter(isNull -> isNull)
                 .map(ignored -> selection));
 
@@ -58,11 +57,11 @@ public class LobbyViewModel extends ViewModel {
                                 greeting -> response.setValue(Response.success(greeting)),
                                 throwable -> response.setValue(Response.error(throwable))
                         ),
-                selectionObservable
+                stateRestored
                         .filter(selection ->  selection == ButtonSelection.COMMON)
                         .doOnNext(buttonSelection1 -> Log.d("Restored", buttonSelection1.toString()))
                         .subscribe(restoredSelection -> commonClick.onNext(true)),
-                selectionObservable
+                stateRestored
                         .filter(selection ->  selection == ButtonSelection.GREETING)
                         .doOnNext(buttonSelection1 -> Log.d("Restored", buttonSelection1.toString()))
                         .subscribe(restoredSelection -> greetingClick.onNext(true))
@@ -85,6 +84,10 @@ public class LobbyViewModel extends ViewModel {
         greetingClick.onNext(new Object());
     }
 
+    void restoreState(@NonNull ButtonSelection buttonSelection) {
+        this.buttonSelection.onNext(buttonSelection);
+    }
+
     // View observes for live data changes
     MutableLiveData<Response<String>> getResponse() {
         return response;
@@ -92,9 +95,5 @@ public class LobbyViewModel extends ViewModel {
 
     MutableLiveData<Boolean> getLoadingStatus() {
         return loadingStatus;
-    }
-
-    void restoreState(@NonNull ButtonSelection buttonSelection) {
-        this.buttonSelection.onNext(buttonSelection);
     }
 }

@@ -6,6 +6,7 @@ package app.mvp.com.presenterinstance.mvvm.features.lobby;
 
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
+import android.support.annotation.NonNull;
 
 import app.mvp.com.presenterinstance.mvvm.services.LoadCommonGreetingUseCase;
 import app.mvp.com.presenterinstance.mvvm.services.LoadLobbyGreetingUseCase;
@@ -15,9 +16,7 @@ import app.mvp.com.presenterinstance.mvvm.services.SchedulersFacade;
 public class LobbyViewModelFactory implements ViewModelProvider.Factory {
 
     private final LoadCommonGreetingUseCase loadCommonGreetingUseCase;
-
     private final LoadLobbyGreetingUseCase loadLobbyGreetingUseCase;
-
     private final SchedulersFacade schedulersFacade;
 
     LobbyViewModelFactory(LoadCommonGreetingUseCase loadCommonGreetingUseCase,
@@ -28,8 +27,9 @@ public class LobbyViewModelFactory implements ViewModelProvider.Factory {
         this.schedulersFacade = schedulersFacade;
     }
 
+    @NonNull
     @Override
-    public <T extends ViewModel> T create(Class<T> modelClass) {
+    public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if (modelClass.isAssignableFrom(LobbyViewModel.class)) {
             return (T) new LobbyViewModel(loadCommonGreetingUseCase, loadLobbyGreetingUseCase, schedulersFacade);
         }
