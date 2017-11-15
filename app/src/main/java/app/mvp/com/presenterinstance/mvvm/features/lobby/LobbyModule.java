@@ -8,7 +8,7 @@ import app.mvp.com.presenterinstance.mvvm.services.LoadLobbyGreetingUseCase;
 import app.mvp.com.presenterinstance.mvvm.services.LobbyGreetingRepository;
 import app.mvp.com.presenterinstance.mvvm.services.SchedulersFacade;
 import app.mvp.com.presenterinstance.mvvm.services.pokemon.PokemonApi;
-import app.mvp.com.presenterinstance.mvvm.services.pokemon.PokemonService;
+import app.mvp.com.presenterinstance.mvvm.services.pokemon.PokemonModule;
 import dagger.Module;
 import dagger.Provides;
 
@@ -16,7 +16,7 @@ import dagger.Provides;
  * Created by andreas on 28/10/17.
  */
 
-@Module
+@Module(includes = PokemonModule.class)
 public class LobbyModule {
 
     @Provides
@@ -47,18 +47,6 @@ public class LobbyModule {
     @ActivityScope
     static SchedulersFacade provideSchedulersFacade() {
         return new SchedulersFacade();
-    }
-
-    @Provides
-    @ActivityScope
-    static PokemonService providePokemonService() {
-        return new PokemonService();
-    }
-
-    @Provides
-    @ActivityScope
-    static PokemonApi providePokemonApi(PokemonService pokemonService) {
-        return pokemonService.createService(PokemonApi.class);
     }
 
     @Provides
