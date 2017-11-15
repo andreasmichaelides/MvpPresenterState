@@ -13,13 +13,13 @@ public class PokemonModule {
 
     @Provides
     @ActivityScope
-    static PokemonService providePokemonService() {
-        return new PokemonService();
+    static PokemonRetrofit providePokemonService() {
+        return new PokemonRetrofit();
     }
 
     @Provides
     @ActivityScope
-    static PokemonApi providePokemonApi(PokemonService pokemonService) {
-        return pokemonService.createService(PokemonApi.class);
+    static PokemonApi providePokemonApi(PokemonRetrofit pokemonRetrofit) {
+        return pokemonRetrofit.createService(PokemonApi.class);
     }
 }

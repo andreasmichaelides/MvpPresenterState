@@ -39,6 +39,7 @@ repositories {
     mavenCentral()
     google()
     maven { url 'http://jcenter.bintray.com' }
+    maven { url 'https://maven.google.com' }
 }
 
 dependencies {
@@ -80,9 +81,12 @@ dependencies {
     compile 'com.google.dagger:dagger-android-support:2.12' // if you use the support libraries
     annotationProcessor 'com.google.dagger:dagger-android-processor:2.12'
 
-    //Retrofit
+    // Retrofit
     compile 'com.squareup.retrofit2:retrofit:2.3.0'
     compile 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
     compile 'com.squareup.retrofit2:converter-gson:2.3.0'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.3.1'
+
+    // Glide
+    compile 'com.github.bumptech.glide:glide:4.3.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.3.1'
 }

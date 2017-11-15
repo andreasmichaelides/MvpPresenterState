@@ -3,6 +3,8 @@ package app.mvp.com.presenterinstance.mvvm.core.dagger;
 
 import app.mvp.com.presenterinstance.mvvm.features.lobby.LobbyActivity;
 import app.mvp.com.presenterinstance.mvvm.features.lobby.LobbyModule;
+import app.mvp.com.presenterinstance.mvvm.features.pokemonSearch.PokemonSearchActivity;
+import app.mvp.com.presenterinstance.mvvm.features.pokemonSearch.PokemonSearchModule;
 import dagger.Module;
 import dagger.android.AndroidInjectionModule;
 import dagger.android.ContributesAndroidInjector;
@@ -17,5 +19,9 @@ abstract class ApplicationModule {
     @ActivityScope
     @ContributesAndroidInjector(modules = LobbyModule.class)
     abstract LobbyActivity lobbyActivityInjector();
+
+    @ActivityScope
+    @ContributesAndroidInjector(modules = PokemonSearchModule.class)
+    abstract PokemonSearchActivity pokemonSearchActivityInjector();
 
 }
