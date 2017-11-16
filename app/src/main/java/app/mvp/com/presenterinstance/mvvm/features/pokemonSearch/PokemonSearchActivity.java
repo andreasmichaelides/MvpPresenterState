@@ -28,6 +28,8 @@ import static android.view.View.VISIBLE;
 
 public class PokemonSearchActivity extends DaggerAppCompatActivity {
 
+    private static final String POKEMON_QUERY = "POKEMON_QUERY";
+
     @Inject
     PokemonSearchViewModelFactory viewModelFactory;
 
@@ -70,6 +72,27 @@ public class PokemonSearchActivity extends DaggerAppCompatActivity {
                 .observe(this, throwable -> Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_SHORT).show());
         viewModel.isLoading()
                 .observe(this, isLoading -> pokemonSearchProgressBar.setVisibility(isLoading ? VISIBLE : INVISIBLE));
+
+        restoreInstance(savedInstanceState);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        String text = pokemonSearchSearchView.getQuery().toString();
+        if (!text.isEmpty()) {
+            outState.putString(POKEMON_QUERY, text);
+        }
+
+        super.onSaveInstanceState(outState);
+    }
+
+    private void restoreInstance(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            String query = savedInstanceState.getString(POKEMON_QUERY);
+            if (query != null) {
+                viewModel.restoreSearch(query);
+            }
+        }
     }
 
     private void setPokemonData(PokemonResponse pokemonResponse) {

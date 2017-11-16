@@ -1,7 +1,9 @@
 package app.mvp.com.presenterinstance.mvvm.features.pokemonSearch;
 
 import app.mvp.com.presenterinstance.mvvm.core.dagger.ActivityScope;
+import app.mvp.com.presenterinstance.mvvm.features.pokemonSearch.usecase.ShouldRestoreSearch;
 import app.mvp.com.presenterinstance.mvvm.features.pokemonSearch.usecase.SearchPokemon;
+import app.mvp.com.presenterinstance.mvvm.features.pokemonSearch.usecase.HasSearchResults;
 import app.mvp.com.presenterinstance.mvvm.repository.PokemonRepository;
 import app.mvp.com.presenterinstance.mvvm.repository.PokemonRepositoryImpl;
 import app.mvp.com.presenterinstance.mvvm.services.SchedulersFacade;
@@ -19,8 +21,8 @@ public class PokemonSearchModule {
 
     @Provides
     @ActivityScope
-    static PokemonSearchViewModelFactory providePokemonSearchViewModelFactory(SearchPokemon searchPokemon) {
-        return new PokemonSearchViewModelFactory(searchPokemon);
+    static PokemonSearchViewModelFactory providePokemonSearchViewModelFactory(SearchPokemon searchPokemon, ShouldRestoreSearch shouldRestoreSearch) {
+        return new PokemonSearchViewModelFactory(searchPokemon, shouldRestoreSearch);
     }
 
     @Provides
@@ -37,7 +39,19 @@ public class PokemonSearchModule {
 
     @Provides
     @ActivityScope
-    static SearchPokemon provideSearchPokemon(PokemonRepository pokemonRepository) {
-        return new SearchPokemon(pokemonRepository);
+    static SearchPokemon provideSearchPokemon(PokemonRepository pokemonRepository, HasSearchResults hasSearchResults) {
+        return new SearchPokemon(pokemonRepository, hasSearchResults);
+    }
+
+    @Provides
+    @ActivityScope
+    static ShouldRestoreSearch provideRestoreSearch(HasSearchResults hasSearchResults) {
+        return new ShouldRestoreSearch(hasSearchResults);
+    }
+
+    @Provides
+    @ActivityScope
+    static HasSearchResults provideSearchStateManager() {
+        return new HasSearchResults();
     }
 }

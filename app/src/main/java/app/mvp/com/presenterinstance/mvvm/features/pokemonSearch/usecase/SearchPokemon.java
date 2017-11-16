@@ -11,12 +11,16 @@ import io.reactivex.Observable;
 public class SearchPokemon {
 
     private final PokemonRepository pokemonRepository;
+    private final HasSearchResults hasSearchResults;
 
-    public SearchPokemon(PokemonRepository pokemonRepository) {
+    public SearchPokemon(PokemonRepository pokemonRepository, HasSearchResults hasSearchResults) {
         this.pokemonRepository = pokemonRepository;
+        this.hasSearchResults = hasSearchResults;
     }
 
     public Observable<PokemonResponse> search(String pokemonName) {
-        return pokemonRepository.searchPokemon(pokemonName);
+        return pokemonRepository.searchPokemon(pokemonName)
+                .flatMap(pokemonResponse -> hasSearchResults.setSearchResultsAsDownloaded()
+                        .andThen(Observable.just(pokemonResponse)));
     }
 }
