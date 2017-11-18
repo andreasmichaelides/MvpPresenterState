@@ -19,8 +19,7 @@ public class SearchPokemon {
     }
 
     public Observable<PokemonResponse> search(String pokemonName) {
-        return pokemonRepository.searchPokemon(pokemonName)
-                .flatMap(pokemonResponse -> hasSearchResults.setSearchResultsAsDownloaded()
-                        .andThen(Observable.just(pokemonResponse)));
+        return hasSearchResults.setSearchResultsAsDownloaded()
+                .andThen(pokemonRepository.searchPokemon(pokemonName));
     }
 }

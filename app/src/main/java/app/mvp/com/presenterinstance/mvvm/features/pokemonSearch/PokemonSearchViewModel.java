@@ -3,8 +3,9 @@ package app.mvp.com.presenterinstance.mvvm.features.pokemonSearch;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 
-import app.mvp.com.presenterinstance.mvvm.features.pokemonSearch.usecase.ShouldRestoreSearch;
+import app.mvp.com.presenterinstance.core.SingleLiveEvent;
 import app.mvp.com.presenterinstance.mvvm.features.pokemonSearch.usecase.SearchPokemon;
+import app.mvp.com.presenterinstance.mvvm.features.pokemonSearch.usecase.ShouldRestoreSearch;
 import app.mvp.com.presenterinstance.mvvm.services.pokemon.model.PokemonResponse;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
@@ -18,7 +19,7 @@ import io.reactivex.subjects.Subject;
 class PokemonSearchViewModel extends ViewModel {
 
     private final MutableLiveData<PokemonResponse> pokemonSearchResult = new MutableLiveData<>();
-    private final MutableLiveData<Throwable> pokemonSearchError = new MutableLiveData<>();
+    private final SingleLiveEvent<String> pokemonSearchError = new SingleLiveEvent<>();
     private final MutableLiveData<Boolean> loading = new MutableLiveData<>();
     private final Subject<String> searchForPokemon = PublishSubject.create();
     private final Subject<String> restoreSearch = PublishSubject.create();
@@ -29,7 +30,7 @@ class PokemonSearchViewModel extends ViewModel {
         disposables.addAll(
                 searchForPokemon.switchMap(pokemonQuery -> searchPokemon.search(pokemonQuery)
                         .doOnSubscribe(disposable -> loading.setValue(true))
-                        .doOnError(throwable -> pokemonSearchError.setValue(throwable))
+                        .doOnError(throwable -> pokemonSearchError.setValue(throwable.getMessage()))
                         .doOnError(throwable -> loading.setValue(false))
                         .onErrorResumeNext(Observable.empty()))
                         .subscribe(pokemonResponse -> {
@@ -53,7 +54,7 @@ class PokemonSearchViewModel extends ViewModel {
         return pokemonSearchResult;
     }
 
-    MutableLiveData<Throwable> searchError() {
+    SingleLiveEvent<String> searchError() {
         return pokemonSearchError;
     }
 

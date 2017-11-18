@@ -3,11 +3,11 @@ package app.mvp.com.presenterinstance.mvvm.features.pokemonSearch;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -43,6 +43,7 @@ public class PokemonSearchActivity extends DaggerAppCompatActivity {
     TextView pokemonSearchName;
 
     private PokemonSearchViewModel viewModel;
+    private String lastSearchQuery = "";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,6 +57,7 @@ public class PokemonSearchActivity extends DaggerAppCompatActivity {
         pokemonSearchSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                setLastSearchQuery(query);
                 viewModel.searchPokemon(query);
                 return false;
             }
@@ -69,7 +71,7 @@ public class PokemonSearchActivity extends DaggerAppCompatActivity {
         viewModel.searchResult()
                 .observe(this, pokemonResponse -> setPokemonData(pokemonResponse));
         viewModel.searchError()
-                .observe(this, throwable -> Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_SHORT).show());
+                .observe(this, message -> Snackbar.make(pokemonSearchSearchView, message, Snackbar.LENGTH_SHORT).show());
         viewModel.isLoading()
                 .observe(this, isLoading -> pokemonSearchProgressBar.setVisibility(isLoading ? VISIBLE : INVISIBLE));
 
@@ -78,9 +80,8 @@ public class PokemonSearchActivity extends DaggerAppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        String text = pokemonSearchSearchView.getQuery().toString();
-        if (!text.isEmpty()) {
-            outState.putString(POKEMON_QUERY, text);
+        if (!lastSearchQuery.isEmpty()) {
+            outState.putString(POKEMON_QUERY, lastSearchQuery);
         }
 
         super.onSaveInstanceState(outState);
@@ -90,9 +91,14 @@ public class PokemonSearchActivity extends DaggerAppCompatActivity {
         if (savedInstanceState != null) {
             String query = savedInstanceState.getString(POKEMON_QUERY);
             if (query != null) {
+                setLastSearchQuery(query);
                 viewModel.restoreSearch(query);
             }
         }
+    }
+
+    private void setLastSearchQuery(String query) {
+        lastSearchQuery = query;
     }
 
     private void setPokemonData(PokemonResponse pokemonResponse) {
